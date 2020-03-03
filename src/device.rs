@@ -12,6 +12,16 @@ pub struct Device {
     path: String,
     interface: String,
     device_type: DeviceType,
+    ip4config_path: String,
+}
+#[derive(Default, Debug, Clone, Eq, PartialEq)]
+pub struct IP4Config {
+    pub address: String,
+    pub gateway: String,
+    pub route1: String,
+    pub route2: String,
+    pub dns: String,
+    pub domain: String,
 }
 
 impl Device {
@@ -20,11 +30,14 @@ impl Device {
 
         let device_type = dbus_manager.get_device_type(path)?;
 
+        let ip4config_path = dbus_manager.get_device_ip4config_path(path)?;
+
         Ok(Device {
             dbus_manager: Rc::clone(dbus_manager),
             path: path.to_string(),
             interface: interface,
             device_type: device_type,
+            ip4config_path: ip4config_path,
         })
     }
 
@@ -102,6 +115,14 @@ impl Device {
                 )
             },
         }
+    }
+
+    pub fn get_ip4_config(&self) -> Result<IP4Config> {
+        self.dbus_manager.get_ip4_config(&self.ip4config_path)
+    }
+
+    pub fn get_ip4config_gateway(&self) -> Result<String> {
+        self.dbus_manager.get_ip4config_gateway(&self.ip4config_path)
     }
 }
 
@@ -311,6 +332,23 @@ mod tests {
     use super::super::NetworkManager;
 
     use super::*;
+
+    #[test]
+    fn test_ip4config() {
+        let manager = NetworkManager::new();
+        let devices = manager.get_devices().unwrap();
+        let i = devices
+            .iter()
+            .position(|ref d| d.device_type == DeviceType::WiFi)
+            .unwrap();
+        let device = &devices[i];
+        let state = device.get_state().unwrap();
+
+        if state == DeviceState::Activated {
+            let ip4conf = device.get_ip4config_gateway();
+            println!("IP4Config: {:?}", ip4conf);
+        }
+    }
 
     #[test]
     fn test_device_connect_disconnect() {

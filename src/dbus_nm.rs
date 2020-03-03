@@ -11,7 +11,7 @@ use dbus_api::{extract, path_to_string, DBusApi, VariantTo, variant_iter_to_vec_
 use manager::{Connectivity, NetworkManagerState};
 use connection::{ConnectionSettings, ConnectionState};
 use ssid::{AsSsidSlice, Ssid};
-use device::{DeviceState, DeviceType};
+use device::{DeviceState, DeviceType, IP4Config};
 use wifi::{AccessPoint, AccessPointCredentials, NM80211ApFlags, NM80211ApSecurityFlags};
 
 type VariantMap = HashMap<String, Variant<Box<RefArg>>>;
@@ -29,6 +29,7 @@ const NM_ACTIVE_INTERFACE: &str = "org.freedesktop.NetworkManager.Connection.Act
 const NM_DEVICE_INTERFACE: &str = "org.freedesktop.NetworkManager.Device";
 const NM_WIRELESS_INTERFACE: &str = "org.freedesktop.NetworkManager.Device.Wireless";
 const NM_ACCESS_POINT_INTERFACE: &str = "org.freedesktop.NetworkManager.AccessPoint";
+const NM_IP4CONFIG_INTERFACE: &str = "org.freedesktop.NetworkManager.IP4Config";
 
 const NM_WEP_KEY_TYPE_PASSPHRASE: u32 = 2;
 
@@ -153,6 +154,42 @@ impl DBusNetworkManager {
 
     pub fn get_active_connection_devices(&self, path: &str) -> Result<Vec<String>> {
         self.dbus.property(path, NM_ACTIVE_INTERFACE, "Devices")
+    }
+
+    pub fn get_ip4_config(&self, path: &str) -> Result<IP4Config> {
+        let response = self.dbus.call(path, NM_IP4CONFIG_INTERFACE, "GetGateway")?;
+        let dict: Dict<&str, Dict<&str, Variant<Iter>, _>, _> = self.dbus.extract(&response)?;
+
+        let mut address = String::new();
+        let mut gateway = String::new();
+        let mut route1 = String::new();
+        let mut route2 = String::new();
+        let mut dns = String::new();
+        let mut domain = String::new();
+
+        for(_, v1) in dict {
+            for(k2, mut v2) in v1 {
+                match k2 {
+                    "gateway" => {
+                        gateway = extract::<String>(&mut v2)?;
+                    },
+                    _ => {},
+                }
+            }
+        }
+
+        Ok(IP4Config {
+            address: address,
+            gateway: gateway,
+            route1: route1,
+            route2: route2,
+            dns: dns,
+            domain: domain,
+        })
+    }
+
+    pub fn get_ip4config_gateway(&self, path: &str) -> Result<String> {
+        self.dbus.property(path, NM_IP4CONFIG_INTERFACE, "Gateway")
     }
 
     pub fn delete_connection(&self, path: &str) -> Result<()> {
@@ -375,6 +412,10 @@ impl DBusNetworkManager {
 
     pub fn get_device_state(&self, path: &str) -> Result<DeviceState> {
         self.dbus.property(path, NM_DEVICE_INTERFACE, "State")
+    }
+
+    pub fn get_device_ip4config_path(&self, path: &str) -> Result<String> {
+        self.dbus.property(path, NM_DEVICE_INTERFACE, "Ip4Config")
     }
 
     pub fn connect_device(&self, path: &str) -> Result<()> {
