@@ -418,6 +418,10 @@ impl DBusNetworkManager {
         self.dbus.property(path, NM_DEVICE_INTERFACE, "Ip4Config")
     }
 
+    pub fn get_hardware_address(&self, path: &str) -> Result<String> {
+        self.dbus.property(path, NM_WIRELESS_INTERFACE, "HwAddress")
+    }
+
     pub fn connect_device(&self, path: &str) -> Result<()> {
         self.dbus.call_with_args(
             NM_SERVICE_PATH,

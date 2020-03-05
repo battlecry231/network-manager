@@ -12,6 +12,7 @@ pub struct Device {
     path: String,
     interface: String,
     device_type: DeviceType,
+    hardware_address: String,
     ip4config_path: String,
 }
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
@@ -30,6 +31,11 @@ impl Device {
 
         let device_type = dbus_manager.get_device_type(path)?;
 
+        let mut hardware_address= String::new();
+        if device_type == DeviceType::WiFi {
+            hardware_address = dbus_manager.get_hardware_address(path)?;
+        }
+
         let ip4config_path = dbus_manager.get_device_ip4config_path(path)?;
 
         Ok(Device {
@@ -37,6 +43,7 @@ impl Device {
             path: path.to_string(),
             interface: interface,
             device_type: device_type,
+            hardware_address: hardware_address,
             ip4config_path: ip4config_path,
         })
     }
