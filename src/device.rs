@@ -12,7 +12,7 @@ pub struct Device {
     path: String,
     interface: String,
     device_type: DeviceType,
-    hardware_address: String,
+    hardware_address: Option<String>,
     ip4config_path: String,
 }
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
@@ -31,9 +31,9 @@ impl Device {
 
         let device_type = dbus_manager.get_device_type(path)?;
 
-        let mut hardware_address= String::new();
+        let mut hardware_address= Option::None;
         if device_type == DeviceType::WiFi {
-            hardware_address = dbus_manager.get_hardware_address(path)?;
+            hardware_address = Some(dbus_manager.get_hardware_address(path)?);
         }
 
         let ip4config_path = dbus_manager.get_device_ip4config_path(path)?;
@@ -60,7 +60,7 @@ impl Device {
         self.dbus_manager.get_device_state(&self.path)
     }
 
-    pub fn get_hardware_address(&self) -> &str { &self.hardware_address }
+    pub fn get_hardware_address(&self) -> &Option<String> { &self.hardware_address }
 
     pub fn as_wifi_device(&self) -> Option<WiFiDevice> {
         if self.device_type == DeviceType::WiFi {
