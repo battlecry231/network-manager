@@ -60,6 +60,8 @@ impl Device {
         self.dbus_manager.get_device_state(&self.path)
     }
 
+    pub fn get_hardware_address(&self) -> &str { &self.hardware_address }
+
     pub fn as_wifi_device(&self) -> Option<WiFiDevice> {
         if self.device_type == DeviceType::WiFi {
             Some(new_wifi_device(&self.dbus_manager, self))
