@@ -10,17 +10,17 @@ categories = ["api-bindings", "network-programming", "os::unix-apis"]
 license = "Apache-2.0"
 
 [dependencies]
-dbus = "0.5"
-futures = "0.1"
-futures-cpupool = "0.1"
-tokio-timer = "0.1"
-bitflags = "1.0"
-ascii = "0.8"
-log = "0.3"
+dbus = "^0.5"
+futures = "^0.1"
+futures-cpupool = "^0.1"
+tokio-timer = "^0.1"
+bitflags = "^1.0"
+ascii = "^0.8"
+log = "^0.3"
 
 [dependencies.error-chain]
-version = "0.11"
+version = "^0.11"
 default-features = false
 
 [dev-dependencies]
-clap = "2.32"
+clap = "^2.32"
