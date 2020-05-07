@@ -3,14 +3,7 @@ network-manager
 
 > Rust NetworkManager bindings
 
-[![Current Release](https://img.shields.io/github/release/resin-io-modules/network-manager.svg?style=flat-square)](https://github.com/resin-io-modules/network-manager/releases/latest)
-[![CircleCI status](https://img.shields.io/circleci/project/github/resin-io-modules/network-manager.svg?style=flat-square)](https://circleci.com/gh/resin-io-modules/network-manager)
-[![License](https://img.shields.io/github/license/resin-io-modules/network-manager.svg?style=flat-square)](https://github.com/resin-io-modules/network-manager/blob/master/LICENSE)
-[![Issues](https://img.shields.io/github/issues/resin-io-modules/network-manager.svg?style=flat-square)](https://github.com/resin-io-modules/network-manager/issues)
-
-<div align="center">
-  <sub>an open source :satellite: project by <a href="https://resin.io">resin.io</a></sub>
-</div>
+[![Build Status](https://travis-ci.org/battlecry231/network-manager.svg?branch=devel)](https://travis-ci.org/battlecry231/network-manager)
 
 ***
 
